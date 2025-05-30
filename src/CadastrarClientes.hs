@@ -1,15 +1,15 @@
 module CadastrarClientes where
 
 import System.IO
+import IdUtil (gerarIdUnicoCliente)
 
 type Cliente = (Int, String, String)
 
 -- Função para cadastrar um cliente
-cadastrarCliente :: IO Cliente
-cadastrarCliente = do
-    putStrLn "Digite o ID do cliente:"
-    idStr <- getLine
-    let idCliente = read idStr :: Int
+cadastrarCliente :: [Cliente] -> IO Cliente
+cadastrarCliente clientes = do
+    let idCliente = gerarIdUnicoCliente clientes
+    putStrLn $ "ID gerado: " ++ show idCliente
 
     putStrLn "Digite o Nome do cliente:"
     nome <- getLine
