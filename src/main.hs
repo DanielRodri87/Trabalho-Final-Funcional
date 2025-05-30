@@ -7,8 +7,8 @@ import System.IO
 menuPrincipal :: IO ()
 menuPrincipal = do
     putStrLn "\nMenu Principal"
-    putStrLn "1. Cadastrar Clientes"
-    putStrLn "2. Cadastrar Produtos"
+    putStrLn "1. Opcoes Clientes"
+    putStrLn "2. Opcoes Produtos"
     putStrLn "3. Sair"
     putStr "Escolha uma opção: "
     opcao <- getLine
