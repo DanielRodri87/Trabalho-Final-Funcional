@@ -32,7 +32,7 @@ menuClientes clientes = do
     opcao <- getLine
     case opcao of
         "1" -> do
-            novoCliente <- cadastrarCliente
+            novoCliente <- cadastrarCliente clientes  -- Pass current clients list
             menuClientes (clientes ++ [novoCliente])
         "2" -> do
             putStr "Digite o ID do cliente que deseja editar: "
