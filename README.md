@@ -10,6 +10,8 @@ Bem-vindo ao **Gerenciador de Uma Cafeteria**, uma solução prática e eficient
 |-----------------|--------|---------------|-------------------------------|
 | 30/05/2025      | 1.0    | Daniel        | Criação da estrutura inicial. |
 | 30/05/2025      | 1.1    | Francinaldo   | CRUD Produtos Iniciado        |
+| 30/05/2025      | 1.2    | Daniel        | CRUD Clientes Iniciado        |
+
 
 ---
 
