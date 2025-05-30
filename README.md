@@ -8,8 +8,7 @@ Bem-vindo ao **Gerenciador de Uma Cafeteria**, uma solução prática e eficient
 
 | Data            | Versão | Responsável   | Alteração                     |
 |-----------------|--------|---------------|-------------------------------|
-| 30/05/2025      | 1.0    | Desenvolvedor | Criação do documento inicial. |
-| 30/05/2025      | 1.1    | Desenvolvedor | Revisão e aprimoramento do README. |
+| 30/05/2025      | 1.0    | Daniel        | Criação da estrutura inicial. |
 
 ---
 
@@ -46,38 +45,14 @@ Bem-vindo ao **Gerenciador de Uma Cafeteria**, uma solução prática e eficient
 
 ---
 
-## 🚀 Como Começar
+## 🚀 Como Rodar
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/seu-usuario/gerenciador-cafeteria.git
+   git clone https://github.com/DanielRodri87/Trabalho-Final-Funcional.git
    ```
-2. Instale as dependências (exemplo com Python):
+2. Rode o Projeto por meio do MakeFile:
    ```bash
-   pip install -r requirements.txt
-   ```
-3. Execute o sistema:
-   ```bash
-   python main.py
+   make
    ```
 
-*Nota: Adapte os comandos conforme a linguagem ou framework escolhido (ex.: Node.js, Java).*
-
----
-
-## 🤝 Contribuições
-
-Quer ajudar a melhorar o Gerenciador de Uma Cafeteria? Sinta-se à vontade para:
-- Abrir issues com sugestões ou problemas.
-- Enviar pull requests com melhorias.
-- Compartilhar ideias no nosso [Discord](https://discord.gg/exemplo) (link fictício, substitua pelo real).
-
----
-
-## 📌 Licença
-
-Este projeto está sob a [MIT License](LICENSE) - veja o arquivo `LICENSE` para mais detalhes.
-
----
-
-> **Gerenciador de Uma Cafeteria** - Simplificando o dia a dia com tecnologia! ☕
