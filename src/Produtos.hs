@@ -1,31 +1,28 @@
 module Produtos where
 
+import Validacao (getStringValid, getValidInt)
+import Tipos (Identificavel(..), Produto(..))
+
+
 import System.IO
 import Control.Exception (catch, IOException)
 import IdUtil (gerarIdUnicoProduto)
 
-type Produto = (Int, String, Int, Float, String)
-
 novoProduto :: [Produto] -> IO Produto
 novoProduto produtos = do
-    putStrLn "Digite o nome do produto:"
-    nome <- getLine
+    nome <- getStringValid "Digite o nome do produto: "
+     
+    qtd <- getValidInt "Digite a quantidade do produto: "
 
-    putStrLn "Digite a quantidade do produto:"
-    qtdStr <- getLine
-    let qtd = read qtdStr :: Int
-
-    putStrLn "Digite o preço do produto:"
-    precoStr <- getLine
+    precoStr <- getStringValid "Digite o preço do produto:"
     let preco = read precoStr :: Float
 
-    putStrLn "Digite o controle/categoria do produto:"
-    controle <- getLine
+    controle <- getStringValid "Digite o controle/categoria do produto:"
 
     -- Gera um ID único entre 100 e 999
     let id = gerarIdUnicoProduto produtos
     
-    let produto = (id, nome, qtd, preco, controle)
+    let produto = Produto id nome qtd preco controle
     putStrLn $ "Produto cadastrado com sucesso! ID: " ++ show id
     return produto
 
@@ -34,19 +31,23 @@ listarProdutos produtos = do
     putStrLn "Lista de Produtos:"
     putStrLn "ID\tNome\t\tQuantidade\tPreço\t\tControle"
     putStrLn "--------------------------------------------------------------"
-    mapM_ (\(id, nome, qtd, preco, controle) -> 
-        putStrLn $ show id ++ "\t" ++ nome ++ "\t\t" ++ 
-        show qtd ++ "\t\t" ++ show preco ++ "\t\t" ++ controle) produtos
+    mapM_ (\p -> 
+        putStrLn $ show (idProduto p) ++ "\t" ++ nomeProduto p ++ "\t\t" ++ 
+        show (quantidadeProduto p) ++ "\t\t" ++ show (precoProduto p) ++ "\t\t" ++ controleProduto p) produtos
 
 editarProduto :: Int -> [Produto] -> IO [Produto]
 editarProduto idEditar produtos = do
-    let produtoExistente = filter (\(id, _, _, _, _) -> id == idEditar) produtos
+    let produtoExistente = filter (\p -> obterID p == idEditar) produtos
     if null produtoExistente
         then do
             putStrLn "Produto não encontrado!"
             return produtos
         else do
-            let (_, nomeAtual, qtdAtual, precoAtual, controleAtual) = head produtoExistente
+            let produto = head produtoExistente
+            let nomeAtual = nomeProduto produto
+            let qtdAtual = quantidadeProduto produto
+            let precoAtual = precoProduto produto
+            let controleAtual = controleProduto produto
             
             putStrLn $ "Produto atual: ID=" ++ show idEditar ++ 
                       ", Nome=" ++ nomeAtual ++ 
@@ -54,47 +55,44 @@ editarProduto idEditar produtos = do
                       ", Preço=" ++ show precoAtual ++
                       ", Controle=" ++ controleAtual
             
-            putStrLn "Digite o novo nome do produto (ou enter para manter):"
-            novoNome <- getLine
-            let nomeAtualizado = if null novoNome then nomeAtual else novoNome
+             
+            novoNome <- getStringValid "Digite o novo nome do produto (ou enter para manter):"
             
-            putStrLn "Digite a nova quantidade (ou enter para manter):"
-            novaQtdStr <- getLine
-            let qtdAtualizada = if null novaQtdStr then qtdAtual else read novaQtdStr :: Int
+            novaQtd <- getValidInt "Digite a nova quantidade do produto (ou enter para manter):"
             
-            putStrLn "Digite o novo preço (ou enter para manter):"
-            novoPrecoStr <- getLine
-            let precoAtualizado = if null novoPrecoStr then precoAtual else read novoPrecoStr :: Float
+            novoPrecoStr <- getStringValid "Digite o novo preco do produto (ou enter para manter):"
+            let novoPreco = read novoPrecoStr :: Float
             
-            putStrLn "Digite o novo controle (ou enter para manter):"
-            novoControle <- getLine
-            let controleAtualizado = if null novoControle then controleAtual else novoControle
+            novoControle <- getStringValid "Digite o novo controle do produto (ou enter para manter):"
 
-            let produtosAtualizados = map (\(id, nome, qtd, preco, controle) ->
-                    if id == idEditar
-                        then (id, nomeAtualizado, qtdAtualizada, precoAtualizado, controleAtualizado)
-                        else (id, nome, qtd, preco, controle)) produtos
+            let produtosAtualizados = map (\p ->
+                    if idProduto p == idEditar
+                        then p {
+                            nomeProduto = novoNome, quantidadeProduto = novaQtd, 
+                            precoProduto = novoPreco, controleProduto = novoControle
+                            }
+                        else p) produtos
 
             putStrLn "Produto editado com sucesso!"
             return produtosAtualizados
 
 excluirProduto :: Int -> [Produto] -> IO [Produto]
 excluirProduto idExcluir produtos = do
-    let produtoParaExcluir = filter (\(id, _, _, _, _) -> id == idExcluir) produtos
+    let produtoParaExcluir = filter (\p -> obterID p == idExcluir) produtos
     if null produtoParaExcluir
         then do
             putStrLn "Produto não encontrado!"
             return produtos
         else do
-            let (_, nome, _, _, _) = head produtoParaExcluir
-            putStrLn $ "Produto a ser excluído: " ++ nome
+            let produto = head produtoParaExcluir
+            putStrLn $ "Produto a ser excluído: " ++ nomeProduto produto
             
             putStr "Confirmar exclusão (S/N)? "
             confirmacao <- getLine
             
             if confirmacao == "S" || confirmacao == "s"
                 then do
-                    let produtosAtualizados = filter (\(id, _, _, _, _) -> id /= idExcluir) produtos
+                    let produtosAtualizados = filter (\p -> idProduto p /= idExcluir) produtos
                     putStrLn "Produto excluído com sucesso!"
                     return produtosAtualizados
                 else do

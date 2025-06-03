@@ -1,23 +1,25 @@
 module IdUtil where
 
--- Verifica se um ID já está em uso para produtos
-idExisteProduto :: Int -> [(Int, a, b, c, d)] -> Bool
-idExisteProduto id produtos = any (\(pid, _, _, _, _) -> pid == id) produtos
+import Tipos(Produto (..), Identificavel(..))
+import Cliente (Cliente, novoCliente, obterIdCliente, obterNomeCliente, obterTelefoneCliente, atualizarCliente)
 
--- Verifica se um ID já está em uso para clientes
-idExisteCliente :: Int -> [(Int, a, b)] -> Bool
-idExisteCliente id clientes = any (\(cid, _, _) -> cid == id) clientes
+-- Verifica se um ID já está em uso tanto para produtos, quanto para clientes
+idExiste :: Identificavel a => Int -> [a] -> Bool
+idExiste id lista = any (\x -> obterID x == id) lista
+
+gerarIdUnico :: Identificavel a => [a] -> (Int, Int) -> Int
+gerarIdUnico lista (inicio, fim) = 
+    let existeIds = map obterID lista 
+        novoId = head [x| x <- [inicio..fim], x `notElem` existeIds] 
+    in novoId
+
 
 -- Produtos: IDs entre 100-999
-gerarIdUnicoProduto :: [(Int, b, c, d, e)] -> Int
-gerarIdUnicoProduto produtos = 
-    let existingIds = map (\(id, _, _, _, _) -> id) produtos
-        newId = head [x | x <- [100..999], x `notElem` existingIds]
-    in newId
+gerarIdUnicoProduto :: [Produto] -> Int
+gerarIdUnicoProduto produtos = gerarIdUnico produtos (100, 999)
+
 
 -- Clientes: IDs entre 1000-9999
-gerarIdUnicoCliente :: [(Int, b, c)] -> Int
-gerarIdUnicoCliente clientes = 
-    let existingIds = map (\(id, _, _) -> id) clientes
-        newId = head [x | x <- [1000..9999], x `notElem` existingIds]
-    in newId
+gerarIdUnicoCliente :: [Cliente] -> Int
+gerarIdUnicoCliente clientes = gerarIdUnico clientes (1000, 9999)
+
