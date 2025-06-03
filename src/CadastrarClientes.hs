@@ -11,16 +11,15 @@ cadastrarCliente clientes = do
     let idCliente = gerarIdUnicoCliente clientes
     putStrLn $ "ID gerado: " ++ show idCliente
 
-    putStrLn "Digite o Nome do cliente:"
+    putStrLn "Digite o nome do cliente:"
     nome <- getLine
 
-    putStrLn "Digite o Telefone do cliente:"
+    putStrLn "Digite o telefone do cliente:"
     telefone <- getLine
 
     let cliente = (idCliente, nome, telefone)
     putStrLn "Cliente cadastrado com sucesso!"
     return cliente
-
 
 -- Função para listar todos os clientes
 listarClientes :: [Cliente] -> IO ()
@@ -30,7 +29,6 @@ listarClientes clientes = do
     putStrLn "-----------------------------------"
     mapM_ (\(idCliente, nome, telefone) -> 
         putStrLn $ show idCliente ++ "\t" ++ nome ++ "\t\t" ++ telefone) clientes
-
 
 -- Função para editar um cliente pelo ID
 editarCliente :: Int -> [Cliente] -> IO [Cliente]
@@ -57,7 +55,7 @@ editarCliente idEditar clientes = do
             
             case opcao of
                 "1" -> do
-                    putStrLn "Digite o novo Nome do cliente:"
+                    putStrLn "Digite o novo nome do cliente:"
                     novoNome <- getLine
                     let clientesAtualizados = map (\(id, nome, tel) ->
                             if id == idEditar
@@ -67,7 +65,7 @@ editarCliente idEditar clientes = do
                     return clientesAtualizados
                     
                 "2" -> do
-                    putStrLn "Digite o novo Telefone do cliente:"
+                    putStrLn "Digite o novo telefone do cliente:"
                     novoTelefone <- getLine
                     let clientesAtualizados = map (\(id, nome, tel) ->
                             if id == idEditar
@@ -77,7 +75,7 @@ editarCliente idEditar clientes = do
                     return clientesAtualizados
                     
                 "3" -> do
-                    putStrLn "Digite o novo Nome do cliente:"
+                    putStrLn "Digite o novo nome do cliente:"
                     novoNome <- getLine
                     putStrLn "Digite o novo Telefone do cliente:"
                     novoTelefone <- getLine
