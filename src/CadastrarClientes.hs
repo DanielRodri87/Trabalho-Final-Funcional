@@ -1,9 +1,14 @@
 module CadastrarClientes where
 
+import Validacao (getStringValid, getValidInt)
+import Tipos (Identificavel(..))
+
+import Cliente (Cliente, novoCliente, obterIdCliente, obterNomeCliente, obterTelefoneCliente, atualizarCliente)
+
+
 import System.IO
 import IdUtil (gerarIdUnicoCliente)
 
-type Cliente = (Int, String, String)
 
 -- Função para cadastrar um cliente
 cadastrarCliente :: [Cliente] -> IO Cliente
@@ -11,13 +16,12 @@ cadastrarCliente clientes = do
     let idCliente = gerarIdUnicoCliente clientes
     putStrLn $ "ID gerado: " ++ show idCliente
 
-    putStrLn "Digite o nome do cliente:"
-    nome <- getLine
+    nome <- getStringValid "Digite o nome do cliente:"
 
-    putStrLn "Digite o telefone do cliente:"
-    telefone <- getLine
+    telefone <- getStringValid "Digite o telefone do cliente:"
 
-    let cliente = (idCliente, nome, telefone)
+    let cliente = novoCliente idCliente nome telefone
+
     putStrLn "Cliente cadastrado com sucesso!"
     return cliente
 
@@ -27,19 +31,25 @@ listarClientes clientes = do
     putStrLn "Lista de Clientes:"
     putStrLn "ID\tNome\t\tTelefone"
     putStrLn "-----------------------------------"
-    mapM_ (\(idCliente, nome, telefone) -> 
-        putStrLn $ show idCliente ++ "\t" ++ nome ++ "\t\t" ++ telefone) clientes
+    mapM_ (\c -> putStrLn $ show (obterIdCliente c) ++ "\t" ++ obterNomeCliente c ++ "\t\t" ++ obterTelefoneCliente c) clientes
+
+
+
 
 -- Função para editar um cliente pelo ID
 editarCliente :: Int -> [Cliente] -> IO [Cliente]
 editarCliente idEditar clientes = do
-    let clienteExistente = filter (\(idCliente, _, _) -> idCliente == idEditar) clientes
+    let clienteExistente = filter (\c -> obterIdCliente c == idEditar) clientes
+
     if null clienteExistente
         then do
             putStrLn "Cliente não encontrado!"
             return clientes
         else do
-            let (_, nomeAtual, telefoneAtual) = head clienteExistente
+            let cliente = head clienteExistente  -- Pegamos o primeiro elemento com segurança
+            let nomeAtual = obterNomeCliente cliente
+            let telefoneAtual = obterTelefoneCliente cliente
+
             putStrLn "\nInformações atuais do cliente:"
             putStrLn $ "ID: " ++ show idEditar
             putStrLn $ "Nome: " ++ nomeAtual
@@ -55,34 +65,31 @@ editarCliente idEditar clientes = do
             
             case opcao of
                 "1" -> do
-                    putStrLn "Digite o novo nome do cliente:"
-                    novoNome <- getLine
-                    let clientesAtualizados = map (\(id, nome, tel) ->
-                            if id == idEditar
-                                then (id, novoNome, tel)
-                                else (id, nome, tel)) clientes
+                    novoNome <- getStringValid "Digite o novo nome do cliente:"
+                    let clientesAtualizados = map (\c ->
+                            if obterIdCliente c == idEditar
+                                then atualizarCliente c novoNome (obterTelefoneCliente c)
+                                else c) clientes
                     putStrLn "Nome editado com sucesso!"
                     return clientesAtualizados
                     
-                "2" -> do
-                    putStrLn "Digite o novo telefone do cliente:"
-                    novoTelefone <- getLine
-                    let clientesAtualizados = map (\(id, nome, tel) ->
-                            if id == idEditar
-                                then (id, nome, novoTelefone)
-                                else (id, nome, tel)) clientes
+                "2" -> do  
+                    novoTelefone <- getStringValid "Digite o novo telefone do cliente:"
+                    let clientesAtualizados = map (\c ->
+                            if obterIdCliente c == idEditar
+                                then atualizarCliente c (obterNomeCliente c) novoTelefone
+                                else c) clientes
                     putStrLn "Telefone editado com sucesso!"
                     return clientesAtualizados
                     
                 "3" -> do
-                    putStrLn "Digite o novo nome do cliente:"
-                    novoNome <- getLine
-                    putStrLn "Digite o novo Telefone do cliente:"
-                    novoTelefone <- getLine
-                    let clientesAtualizados = map (\(id, nome, tel) ->
-                            if id == idEditar
-                                then (id, novoNome, novoTelefone)
-                                else (id, nome, tel)) clientes
+                    novoNome <- getStringValid "Digite o nome do cliente:"
+
+                    novoTelefone <- getStringValid "Digite o telefone do cliente:"
+                    let clientesAtualizados = map (\c ->
+                            if obterIdCliente c == idEditar
+                                then atualizarCliente c novoNome novoTelefone
+                                else c) clientes
                     putStrLn "Cliente editado com sucesso!"
                     return clientesAtualizados
                     
@@ -97,7 +104,7 @@ editarCliente idEditar clientes = do
 -- Função para excluir um cliente pelo ID
 excluirCliente :: Int -> [Cliente] -> IO [Cliente]
 excluirCliente idExcluir clientes = do
-    let clientesAtualizados = filter (\(idCliente, _, _) -> idCliente /= idExcluir) clientes
+    let clientesAtualizados = filter (\c -> obterIdCliente c /= idExcluir) clientes
     if length clientesAtualizados == length clientes
         then do
             putStrLn "Cliente não encontrado!"

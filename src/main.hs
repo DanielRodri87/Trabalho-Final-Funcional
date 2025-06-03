@@ -2,10 +2,16 @@ module Main where
 
 import CadastrarClientes
 import Produtos 
-import Pedidos (Pedido, novoPedido, listarPedidos, removerPedido)
+import Pedidos (novoPedido, listarPedidos, removerPedido)
 import System.IO
 import System.Process (callCommand)
-import IdUtil (idExisteCliente, idExisteProduto)
+import IdUtil (idExiste)
+
+import Validacao (getStringValid, getValidInt)
+import Tipos (Produto(..), Pedido(..), Identificavel(..))
+import Cliente (Cliente, novoCliente, obterIdCliente, obterNomeCliente, obterTelefoneCliente, atualizarCliente)
+
+
 
 limparTela :: IO ()
 limparTela = callCommand "clear"
@@ -53,9 +59,8 @@ menuClientes clientes produtos pedidos = do
             pausaTerminal
             menuClientes (clientes ++ [novoCliente]) produtos pedidos
         "2" -> do
-            putStr "Digite o ID do cliente que deseja editar: "
-            idStr <- getLine
-            let id = read idStr :: Int
+            
+            id <- getValidInt "Digite o ID do cliente que deseja editar: " 
             clientesAtualizados <- editarCliente id clientes
             pausaTerminal
             menuClientes clientesAtualizados produtos pedidos
@@ -64,9 +69,7 @@ menuClientes clientes produtos pedidos = do
             pausaTerminal
             menuClientes clientes produtos pedidos
         "4" -> do
-            putStr "Digite o ID do cliente que deseja excluir: "
-            idStr <- getLine
-            let id = read idStr :: Int
+            id <- getValidInt "Digite o ID do cliente que deseja excluir: "
             clientesAtualizados <- excluirCliente id clientes
             pausaTerminal
             menuClientes clientesAtualizados produtos pedidos
@@ -94,9 +97,7 @@ menuProdutos clientes produtos pedidos = do
             pausaTerminal
             menuProdutos clientes produtosAtualizados pedidos
         "2" -> do
-            putStr "Digite o ID do produto que deseja editar: "
-            idStr <- getLine
-            let id = read idStr :: Int
+            id <- getValidInt "Digite o ID do produto que deseja editar: "
             produtosAtualizados <- editarProduto id produtos
             pausaTerminal
             menuProdutos clientes produtosAtualizados pedidos
@@ -105,9 +106,9 @@ menuProdutos clientes produtos pedidos = do
             pausaTerminal
             menuProdutos clientes produtos pedidos
         "4" -> do
-            putStr "Digite o ID do produto que deseja excluir: "
-            idStr <- getLine
-            let id = read idStr :: Int
+            
+            id <- getValidInt "Digite o ID do produto que deseja excluir: "
+
             produtosAtualizados <- excluirProduto id produtos
             pausaTerminal
             menuProdutos clientes produtosAtualizados pedidos
@@ -127,33 +128,33 @@ novoPedidoSeguro clientes produtos pedidos = do
     putStr "Digite o ID do cliente: "
     idClienteStr <- getLine
     let idCliente = read idClienteStr :: Int
-    if not (idExisteCliente idCliente clientes)
+    if not (idExiste idCliente clientes) 
         then do
             putStrLn "ID de cliente inválido! Pedido não cadastrado."
-            return (-1, "", 0)
+            return $ Pedido (-1) "" 0
         else do
             -- Perguntar se deseja ver a lista de produtos
             putStr "Deseja visualizar a lista de produtos cadastrados? (S/N): "
             verProdutos <- getLine
             if verProdutos `elem` ["S", "s"]
                 then listarProdutos produtos else return ()
-            putStr "Digite o ID do produto: "
-            idProdutoStr <- getLine
-            let idProduto = read idProdutoStr :: Int
-            if not (idExisteProduto idProduto produtos)
+            
+            idProdutoEscolhido <- getValidInt "Digite o ID do produto: "
+           
+            if not (idExiste idProdutoEscolhido produtos) 
                 then do
                     putStrLn "ID de produto inválido! Pedido não cadastrado."
-                    return (-1, "", 0)
+                    return $ Pedido (-1) "" 0
                 else do
                     putStr "Digite a quantidade: "
                     qtdStr <- getLine
                     let quantidade = read qtdStr :: Int
                     -- Buscar nome do produto pelo ID
-                    let nomeProduto = case filter (\(pid, nome, _, _, _) -> pid == idProduto) produtos of
-                                        ((_, nome, _, _, _):_) -> nome
-                                        _ -> ""
+                    let nomeProdutoPedido = case filter (\p -> idProduto p == idProdutoEscolhido) produtos of
+                            (p:_) -> nomeProduto p
+                            _     -> ""
                     putStrLn "Pedido cadastrado na fila com sucesso!"
-                    return (idCliente, nomeProduto, quantidade)
+                    return $ Pedido idCliente nomeProdutoPedido quantidade
 
 menuPedidos :: [Cliente] -> [Produto] -> [Pedido] -> IO ()
 menuPedidos clientes produtos pedidos = do
@@ -168,7 +169,7 @@ menuPedidos clientes produtos pedidos = do
     case opcao of
         "1" -> do
             novoPed <- novoPedidoSeguro clientes produtos pedidos
-            if novoPed == (-1, "", 0)
+            if novoPed == Pedido (-1) "" 0
                 then pausaTerminal >> menuPedidos clientes produtos pedidos
                 else pausaTerminal >> menuPedidos clientes produtos (pedidos ++ [novoPed])
         "2" -> do
@@ -181,7 +182,7 @@ menuPedidos clientes produtos pedidos = do
             let idCliente = read idStr :: Int
             let (removidos, filaRestante) = case pedidos of
                     [] -> ([], [])
-                    xs -> let (r, f) = span (\(idC, _, _) -> idC /= idCliente) xs in
+                    xs -> let (r, f) = span (\p -> idClientePedido p /= idCliente) xs in
                           if null f then ([], xs) else ([head f], r ++ tail f)
             if null removidos
                 then putStrLn "Pedido não encontrado na fila!"

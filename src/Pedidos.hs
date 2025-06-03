@@ -2,23 +2,20 @@ module Pedidos where
 
 import System.IO
 import Control.Exception (catch, IOException)
+import Tipos (Pedido(..))
+import Validacao (getStringValid, getValidInt)
 
-type Pedido = (Int, String, Int) -- (IdCliente, NomeProduto, Quantidade)
 
 novoPedido :: [Pedido] -> IO Pedido
 novoPedido pedidos = do
-    putStrLn "Digite o ID do cliente:"  
-    idClienteStr <- getLine
-    let idCliente = read idClienteStr :: Int
+    idCliente <- getValidInt "Digite o ID do cliente:" 
+ 
+    nomeProduto <- getStringValid "Digite o nome do produto:"
+  
+    qtd <- getValidInt "Digite a quantidade:"  
 
-    putStrLn "Digite o nome do produto:"  
-    nomeProduto <- getLine
+    let pedido = Pedido idCliente nomeProduto qtd
 
-    putStrLn "Digite a quantidade:"  
-    qtdStr <- getLine
-    let quantidade = read qtdStr :: Int
-
-    let pedido = (idCliente, nomeProduto, quantidade)
     putStrLn "Pedido cadastrado na fila com sucesso!"
     return pedido
 
@@ -27,7 +24,7 @@ listarPedidos pedidos = do
     putStrLn "Fila de Pedidos:"
     putStrLn "ID Cliente\tProduto\tQuantidade"
     putStrLn "--------------------------------------"
-    mapM_ (\(idC, prod, qtd) -> putStrLn $ show idC ++ "\t" ++ prod ++ "\t" ++ show qtd) pedidos
+    mapM_ (\p -> putStrLn $ show (idClientePedido p) ++ "\t" ++ nomeProdutoPedido p++ "\t" ++ show (quantidadePedido p)) pedidos
 
 salvarPedidos :: [Pedido] -> FilePath -> IO ()
 salvarPedidos pedidos arquivo = do
