@@ -8,18 +8,18 @@ type Produto = (Int, String, Int, Float, String)
 
 novoProduto :: [Produto] -> IO Produto
 novoProduto produtos = do
-    putStrLn "Digite o Nome do produto:"
+    putStrLn "Digite o nome do produto:"
     nome <- getLine
 
-    putStrLn "Digite a Quantidade do produto:"
+    putStrLn "Digite a quantidade do produto:"
     qtdStr <- getLine
     let qtd = read qtdStr :: Int
 
-    putStrLn "Digite o Preço do produto:"
+    putStrLn "Digite o preço do produto:"
     precoStr <- getLine
     let preco = read precoStr :: Float
 
-    putStrLn "Digite o Controle/Categoria do produto:"
+    putStrLn "Digite o controle/categoria do produto:"
     controle <- getLine
 
     -- Gera um ID único entre 100 e 999
@@ -54,19 +54,19 @@ editarProduto idEditar produtos = do
                       ", Preço=" ++ show precoAtual ++
                       ", Controle=" ++ controleAtual
             
-            putStrLn "Digite o novo Nome do produto (ou Enter para manter):"
+            putStrLn "Digite o novo nome do produto (ou enter para manter):"
             novoNome <- getLine
             let nomeAtualizado = if null novoNome then nomeAtual else novoNome
             
-            putStrLn "Digite a nova Quantidade (ou Enter para manter):"
+            putStrLn "Digite a nova quantidade (ou enter para manter):"
             novaQtdStr <- getLine
             let qtdAtualizada = if null novaQtdStr then qtdAtual else read novaQtdStr :: Int
             
-            putStrLn "Digite o novo Preço (ou Enter para manter):"
+            putStrLn "Digite o novo preço (ou enter para manter):"
             novoPrecoStr <- getLine
             let precoAtualizado = if null novoPrecoStr then precoAtual else read novoPrecoStr :: Float
             
-            putStrLn "Digite o novo Controle (ou Enter para manter):"
+            putStrLn "Digite o novo controle (ou enter para manter):"
             novoControle <- getLine
             let controleAtualizado = if null novoControle then controleAtual else novoControle
 
