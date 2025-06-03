@@ -2,6 +2,7 @@ module Main where
 
 import CadastrarClientes
 import Produtos 
+import Pedidos (Pedido, novoPedido, listarPedidos, removerPedido)
 import System.IO
 
 menuPrincipal :: IO ()
@@ -9,13 +10,15 @@ menuPrincipal = do
     putStrLn "\nMenu Principal"
     putStrLn "1. Opcoes Clientes"
     putStrLn "2. Opcoes Produtos"
-    putStrLn "3. Sair"
+    putStrLn "3. Fila de Pedidos"
+    putStrLn "4. Sair"
     putStr "Escolha uma opção: "
     opcao <- getLine
     case opcao of
         "1" -> menuClientes []
         "2" -> menuProdutos []  
-        "3" -> putStrLn "Programa encerrado."
+        "3" -> menuPedidos []
+        "4" -> putStrLn "Programa encerrado."
         _   -> do
             putStrLn "Opção inválida!"
             menuPrincipal
@@ -88,6 +91,39 @@ menuProdutos produtos = do
         _   -> do
             putStrLn "Opção inválida!"
             menuProdutos produtos
+
+menuPedidos :: [Pedido] -> IO ()
+menuPedidos pedidos = do
+    putStrLn "\nMenu de Pedidos"
+    putStrLn "1. Cadastrar Pedido"
+    putStrLn "2. Exibir Fila de Pedidos"
+    putStrLn "3. Remover Pedido da Fila (Pagamento)"
+    putStrLn "4. Voltar ao Menu Principal"
+    putStr "Escolha uma opção: "
+    opcao <- getLine
+    case opcao of
+        "1" -> do
+            novoPed <- novoPedido pedidos
+            menuPedidos (pedidos ++ [novoPed])
+        "2" -> do
+            listarPedidos pedidos
+            menuPedidos pedidos
+        "3" -> do
+            putStrLn "Digite o ID do cliente do pedido a remover (pagamento):"
+            idStr <- getLine
+            let idCliente = read idStr :: Int
+            let (removidos, filaRestante) = case pedidos of
+                    [] -> ([], [])
+                    xs -> let (r, f) = span (\(idC, _, _) -> idC /= idCliente) xs in
+                          if null f then ([], xs) else ([head f], r ++ tail f)
+            if null removidos
+                then putStrLn "Pedido não encontrado na fila!"
+                else putStrLn "Pedido removido da fila (pagamento realizado)!"
+            menuPedidos filaRestante
+        "4" -> menuPrincipal
+        _   -> do
+            putStrLn "Opção inválida!"
+            menuPedidos pedidos
 
 main :: IO ()
 main = menuPrincipal
