@@ -6,13 +6,14 @@ Bem-vindo ao **Gerenciador de Uma Cafeteria**, uma solução prática e eficient
 
 ## 📜 Histórico
 
-| Data            | Versão | Responsável   | Alteração                     |
-|-----------------|--------|---------------|-------------------------------|
-| 30/05/2025      | 1.0    | Daniel        | Criação da estrutura inicial  |
-| 30/05/2025      | 1.1    | Francinaldo   | CRUD Produtos Iniciado        |
-| 30/05/2025      | 1.2    | Daniel        | CRUD Clientes Iniciado        |
-| 03/06/2025      | 1.3    | Iago          | Fila de pedidos finalizado    |
-
+| Data            | Versão | Responsável   |                     Alteração                    |
+|-----------------|--------|---------------|--------------------------------------------------|
+| 30/05/2025      | 1.0    | Daniel        | Criação da estrutura inicial                     |
+| 30/05/2025      | 1.1    | Francinaldo   | CRUD Produtos Iniciado                           |
+| 30/05/2025      | 1.2    | Daniel        | CRUD Clientes Iniciado                           |
+| 03/06/2025      | 1.3    | Iago          | Fila de pedidos finalizado                       |
+| 03/06/2025      | 1.4    | Rayssa        | Desenvolvimento das classes e reparação de erros |
+| 03/06/2025      | 1.5    | Rita          | Documentação do código seguindo boas práticas    |
 ---
 
 ## ✨ Funcionalidades

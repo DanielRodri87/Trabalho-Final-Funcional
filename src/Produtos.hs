@@ -1,22 +1,36 @@
+{-| Este módulo fornece funcionalidades para criar, listar,
+editar, excluir, salvar e carregar produtos. Ele interage com o
+usuário via terminal e faz persistência dos dados em arquivos.
+
+O módulo depende dos seguintes módulos auxiliares:
+
+- 'Tipos'     : Define o tipo 'Produto' e a classe 'Identificavel'.
+- 'Validacao' : Fornece funções de validação de entrada.
+- 'IdUtil'    : Geração de IDs únicos para produtos.
+
+-}
+
 module Produtos where
 
 import Validacao (getStringValid, getValidInt)
 import Tipos (Identificavel(..), Produto(..))
-
-
 import System.IO
 import Control.Exception (catch, IOException)
 import IdUtil (gerarIdUnicoProduto)
 
+{-| Cadastra um novo produto, solicitando dados ao usuário.
+
+Recebe a lista atual de produtos apenas para contexto,
+mas não altera essa lista.
+
+Retorna o produto criado.
+-}
 novoProduto :: [Produto] -> IO Produto
 novoProduto produtos = do
     nome <- getStringValid "Digite o nome do produto: "
-     
     qtd <- getValidInt "Digite a quantidade do produto: "
-
     precoStr <- getStringValid "Digite o preço do produto:"
     let preco = read precoStr :: Float
-
     controle <- getStringValid "Digite o controle/categoria do produto:"
 
     -- Gera um ID único entre 100 e 999
@@ -26,6 +40,11 @@ novoProduto produtos = do
     putStrLn $ "Produto cadastrado com sucesso! ID: " ++ show id
     return produto
 
+{-| Lista todos os produtos presentes.
+
+Exibe no terminal uma tabela formatada contendo:
+ID, nome, quantidade, preço e controle/categoria.
+-}
 listarProdutos :: [Produto] -> IO ()
 listarProdutos produtos = do
     putStrLn "Lista de Produtos:"
@@ -35,6 +54,18 @@ listarProdutos produtos = do
         putStrLn $ show (idProduto p) ++ "\t" ++ nomeProduto p ++ "\t\t" ++ 
         show (quantidadeProduto p) ++ "\t\t" ++ show (precoProduto p) ++ "\t\t" ++ controleProduto p) produtos
 
+{-| Edita um produto existente na lista, identificado pelo ID.
+
+Solicita novos dados ao usuário. Se o produto não for encontrado,
+a lista permanece inalterada.
+
+Parâmetros:
+- 'idEditar': ID do produto a ser editado.
+- Lista de produtos.
+
+Retorna:
+- Nova lista de produtos, com o produto editado.
+-}
 editarProduto :: Int -> [Produto] -> IO [Produto]
 editarProduto idEditar produtos = do
     let produtoExistente = filter (\p -> obterID p == idEditar) produtos
@@ -76,6 +107,17 @@ editarProduto idEditar produtos = do
             putStrLn "Produto editado com sucesso!"
             return produtosAtualizados
 
+{-| Exclui um produto da lista, identificado pelo ID.
+
+Solicita confirmação ao usuário antes de excluir.
+
+Parâmetros:
+- 'idExcluir': ID do produto a ser excluído.
+- Lista de produtos.
+
+Retorna:
+- Nova lista de produtos, sem o produto excluído.
+-}
 excluirProduto :: Int -> [Produto] -> IO [Produto]
 excluirProduto idExcluir produtos = do
     let produtoParaExcluir = filter (\p -> obterID p == idExcluir) produtos
@@ -99,11 +141,30 @@ excluirProduto idExcluir produtos = do
                     putStrLn "Exclusão cancelada."
                     return produtos
 
+{-| Salva a lista de produtos em um arquivo.
+
+Os produtos são serializados usando a representação 'show'.
+
+Parâmetros:
+- 'produtos': Lista de produtos a ser salva.
+- 'arquivo': Caminho do arquivo onde os dados serão salvos.
+-}
 salvarProdutos :: [Produto] -> FilePath -> IO ()
 salvarProdutos produtos arquivo = do
     writeFile arquivo (show produtos)
     putStrLn $ "Produtos salvos com sucesso em " ++ arquivo
 
+{-| Carrega a lista de produtos de um arquivo.
+
+Caso o arquivo não exista ou ocorra um erro de leitura,
+retorna uma lista vazia.
+
+Parâmetro:
+- 'arquivo': Caminho do arquivo a ser lido.
+
+Retorna:
+- Lista de produtos carregados.
+-}
 carregarProdutos :: FilePath -> IO [Produto]
 carregarProdutos arquivo = do
     conteudo <- readFile arquivo `catch` (\(_ :: IOException) -> return "[]")
