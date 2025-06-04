@@ -13,7 +13,7 @@ module IdUtil where
 import Tipos(Produto (..), Identificavel(..))
 import Cliente (Cliente, novoCliente, obterIdCliente, obterNomeCliente, obterTelefoneCliente, atualizarCliente)
 
-{-| Verifica se um ID já está em uso em uma lista de elementos identificáveis.
+{- Verifica se um ID já está em uso em uma lista de elementos identificáveis.
 
 Parâmetros:
 - 'id': ID a ser verificado.
@@ -25,25 +25,19 @@ Retorna:
 idExiste :: Identificavel a => Int -> [a] -> Bool
 idExiste id lista = any (\x -> obterID x == id) lista
 
-{-| Gera um ID único dentro de um intervalo, baseado nos IDs já existentes.
 
-Parâmetros:
-- Lista de elementos identificáveis.
-- Intervalo (início, fim).
-
-Retorna:
-- Um novo ID não utilizado na lista.
--}
 gerarIdUnico :: Identificavel a => [a] -> (Int, Int) -> Int
 gerarIdUnico lista (inicio, fim) = 
     let existeIds = map obterID lista 
         novoId = head [x| x <- [inicio..fim], x `notElem` existeIds] 
     in novoId
-    
-{-| Gera um ID único para produtos (intervalo 100-999). -}
+
+
+{- Produtos: IDs entre 100-999 -}
 gerarIdUnicoProduto :: [Produto] -> Int
 gerarIdUnicoProduto produtos = gerarIdUnico produtos (100, 999)
 
-{-| Gera um ID único para clientes (intervalo 1000-9999). -}
+
+{- Clientes: IDs entre 1000-9999 -}
 gerarIdUnicoCliente :: [Cliente] -> Int
 gerarIdUnicoCliente clientes = gerarIdUnico clientes (1000, 9999)

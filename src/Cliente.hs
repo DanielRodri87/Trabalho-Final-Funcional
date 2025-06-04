@@ -13,6 +13,7 @@ de clientes, incluindo criação, acesso e atualização de dados.
 module Cliente (Cliente, novoCliente, obterIdCliente, obterNomeCliente, obterTelefoneCliente, atualizarCliente) where
 import Tipos (Identificavel(..))
 
+
 {-| Tipo abstrato para clientes.
 
 Construtor interno:

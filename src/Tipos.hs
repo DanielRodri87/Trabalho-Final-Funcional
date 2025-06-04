@@ -9,7 +9,8 @@ incluindo produtos, pedidos e a classe de identificação genérica.
 
 module Tipos where
 
-{-| Classe para tipos que possuem um identificador inteiro. -}
+
+{- | Classe para tipos que possuem um identificador inteiro. -}
 class Identificavel a where
     obterID :: a -> Int
 
@@ -29,6 +30,7 @@ data Produto = Produto
     , precoProduto :: Float
     , controleProduto :: String
     } deriving (Show, Read, Eq)
+
 
 instance Identificavel Produto where
     obterID produto = idProduto produto

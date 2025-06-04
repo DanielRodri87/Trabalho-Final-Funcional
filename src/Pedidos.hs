@@ -26,12 +26,15 @@ Retorna o pedido criado.
 novoPedido :: [Pedido] -> IO Pedido
 novoPedido pedidos = do
     idCliente <- getValidInt "Digite o ID do cliente:" 
+ 
     nomeProduto <- getStringValid "Digite o nome do produto:"
+  
     qtd <- getValidInt "Digite a quantidade:"  
+
     let pedido = Pedido idCliente nomeProduto qtd
+
     putStrLn "Pedido cadastrado na fila com sucesso!"
     return pedido
-
 
 {-| Lista todos os pedidos presentes na fila.
 
@@ -43,11 +46,7 @@ listarPedidos pedidos = do
     putStrLn "Fila de Pedidos:"
     putStrLn "ID Cliente\tProduto\tQuantidade"
     putStrLn "--------------------------------------"
-    mapM_ (\p -> putStrLn $
-        show (idClientePedido p) ++ "\t" ++
-        nomeProdutoPedido p ++ "\t" ++
-        show (quantidadePedido p)
-        ) pedidos
+    mapM_ (\p -> putStrLn $ show (idClientePedido p) ++ "\t" ++ nomeProdutoPedido p++ "\t" ++ show (quantidadePedido p)) pedidos
 
 
 {-| Salva a lista de pedidos em um arquivo.

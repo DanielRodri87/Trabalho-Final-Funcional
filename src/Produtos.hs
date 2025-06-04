@@ -14,9 +14,12 @@ module Produtos where
 
 import Validacao (getStringValid, getValidInt)
 import Tipos (Identificavel(..), Produto(..))
+
+
 import System.IO
 import Control.Exception (catch, IOException)
 import IdUtil (gerarIdUnicoProduto)
+
 
 {-| Cadastra um novo produto, solicitando dados ao usuário.
 
@@ -28,9 +31,12 @@ Retorna o produto criado.
 novoProduto :: [Produto] -> IO Produto
 novoProduto produtos = do
     nome <- getStringValid "Digite o nome do produto: "
+     
     qtd <- getValidInt "Digite a quantidade do produto: "
+
     precoStr <- getStringValid "Digite o preço do produto:"
     let preco = read precoStr :: Float
+
     controle <- getStringValid "Digite o controle/categoria do produto:"
 
     -- Gera um ID único entre 100 e 999
