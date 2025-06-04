@@ -16,9 +16,9 @@ cadastrarCliente clientes = do
     let idCliente = gerarIdUnicoCliente clientes
     putStrLn $ "ID gerado: " ++ show idCliente
 
-    nome <- getStringValid "Digite o nome do cliente:"
+    nome <- getStringValid "Digite o nome do cliente: "
 
-    telefone <- getStringValid "Digite o telefone do cliente:"
+    telefone <- getStringValid "Digite o telefone do cliente: "
 
     let cliente = novoCliente idCliente nome telefone
 
@@ -65,7 +65,7 @@ editarCliente idEditar clientes = do
             
             case opcao of
                 "1" -> do
-                    novoNome <- getStringValid "Digite o novo nome do cliente:"
+                    novoNome <- getStringValid "Digite o novo nome do cliente: "
                     let clientesAtualizados = map (\c ->
                             if obterIdCliente c == idEditar
                                 then atualizarCliente c novoNome (obterTelefoneCliente c)
@@ -74,7 +74,7 @@ editarCliente idEditar clientes = do
                     return clientesAtualizados
                     
                 "2" -> do  
-                    novoTelefone <- getStringValid "Digite o novo telefone do cliente:"
+                    novoTelefone <- getStringValid "Digite o novo telefone do cliente: "
                     let clientesAtualizados = map (\c ->
                             if obterIdCliente c == idEditar
                                 then atualizarCliente c (obterNomeCliente c) novoTelefone
@@ -83,9 +83,9 @@ editarCliente idEditar clientes = do
                     return clientesAtualizados
                     
                 "3" -> do
-                    novoNome <- getStringValid "Digite o nome do cliente:"
+                    novoNome <- getStringValid "Digite o nome do cliente: "
 
-                    novoTelefone <- getStringValid "Digite o telefone do cliente:"
+                    novoTelefone <- getStringValid "Digite o telefone do cliente: "
                     let clientesAtualizados = map (\c ->
                             if obterIdCliente c == idEditar
                                 then atualizarCliente c novoNome novoTelefone
