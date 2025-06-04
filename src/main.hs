@@ -1,3 +1,10 @@
+{-| Módulo principal do sistema.
+
+Responsável por inicializar o programa, exibir os menus principais e
+delegar as operações para os módulos de clientes, produtos e pedidos.
+
+-}
+
 module Main where
 
 import CadastrarClientes
@@ -11,17 +18,19 @@ import Validacao (getStringValid, getValidInt)
 import Tipos (Produto(..), Pedido(..), Identificavel(..))
 import Cliente (Cliente, novoCliente, obterIdCliente, obterNomeCliente, obterTelefoneCliente, atualizarCliente)
 
-
-
+{-| Limpa a tela do terminal. -}
 limparTela :: IO ()
 limparTela = callCommand "clear"
 
+
+{-| Pausa a execução até o usuário pressionar Enter. -}
 pausaTerminal :: IO ()
 pausaTerminal = do
     putStrLn "\nPressione Enter para continuar..."
     _ <- getLine
     return ()
 
+{-| Exibe o menu principal e direciona para os submenus. -}
 menuPrincipal :: [Cliente] -> [Produto] -> [Pedido] -> IO ()
 menuPrincipal clientes produtos pedidos = do
     limparTela
@@ -42,6 +51,7 @@ menuPrincipal clientes produtos pedidos = do
             pausaTerminal
             menuPrincipal clientes produtos pedidos
 
+{-| Exibe o menu de clientes e executa as operações relacionadas. -}
 menuClientes :: [Cliente] -> [Produto] -> [Pedido] -> IO ()
 menuClientes clientes produtos pedidos = do
     limparTela
@@ -79,6 +89,7 @@ menuClientes clientes produtos pedidos = do
             pausaTerminal
             menuClientes clientes produtos pedidos
 
+{-| Exibe o menu de produtos e executa as operações relacionadas. -}
 menuProdutos :: [Cliente] -> [Produto] -> [Pedido] -> IO ()
 menuProdutos clientes produtos pedidos = do
     limparTela
@@ -118,6 +129,10 @@ menuProdutos clientes produtos pedidos = do
             pausaTerminal
             menuProdutos clientes produtos pedidos
 
+{-| Solicita e cadastra um novo pedido, validando IDs de cliente e produto.
+
+Retorna um pedido válido ou um pedido inválido (-1, "", 0) caso haja erro.
+-}
 novoPedidoSeguro :: [Cliente] -> [Produto] -> [Pedido] -> IO Pedido
 novoPedidoSeguro clientes produtos pedidos = do
     -- Perguntar se deseja ver a lista de clientes
@@ -156,6 +171,7 @@ novoPedidoSeguro clientes produtos pedidos = do
                     putStrLn "Pedido cadastrado na fila com sucesso!"
                     return $ Pedido idCliente nomeProdutoPedido quantidade
 
+{-| Exibe o menu de pedidos e executa as operações relacionadas. -}
 menuPedidos :: [Cliente] -> [Produto] -> [Pedido] -> IO ()
 menuPedidos clientes produtos pedidos = do
     limparTela
@@ -195,5 +211,7 @@ menuPedidos clientes produtos pedidos = do
             pausaTerminal
             menuPedidos clientes produtos pedidos
 
+
+{-| Função principal do programa. Inicia o menu principal com listas vazias. -}
 main :: IO ()
 main = menuPrincipal [] [] []

@@ -1,5 +1,5 @@
 module CadastrarClientes where
-
+-- Importação de módulos auxiliares para validação e tipos
 import Validacao (getStringValid, getValidInt)
 import Tipos (Identificavel(..))
 
@@ -10,35 +10,52 @@ import System.IO
 import IdUtil (gerarIdUnicoCliente)
 
 
--- Função para cadastrar um cliente
+{- Função para cadastrar um cliente.
+Descrição: Cadastra um novo cliente solicitando nome e telefone ao usuário, gerando um ID único com base nos clientes já existentes.
+Entrada: Lista de clientes já cadastrados.
+Saída: Um novo cliente criado.
+-}
 cadastrarCliente :: [Cliente] -> IO Cliente
 cadastrarCliente clientes = do
+    -- Gera um ID único para o novo cliente
     let idCliente = gerarIdUnicoCliente clientes
     putStrLn $ "ID gerado: " ++ show idCliente
 
+    -- Solicita nome e telefone válidos ao usuário
     nome <- getStringValid "Digite o nome do cliente: "
 
     telefone <- getStringValid "Digite o telefone do cliente: "
 
+    -- Cria o novo Cliente
     let cliente = novoCliente idCliente nome telefone
 
     putStrLn "Cliente cadastrado com sucesso!"
     return cliente
 
--- Função para listar todos os clientes
+{- Função para listar todos os clientes
+Descrição: Exibe todos os clientes da lista formatados.
+Entrada: Lista de clientes.
+Saída: Impressão formatada no console.
+-}
 listarClientes :: [Cliente] -> IO ()
 listarClientes clientes = do
     putStrLn "Lista de Clientes:"
     putStrLn "ID\tNome\t\tTelefone"
     putStrLn "-----------------------------------"
+    -- Imprime cada cliente formatado
     mapM_ (\c -> putStrLn $ show (obterIdCliente c) ++ "\t" ++ obterNomeCliente c ++ "\t\t" ++ obterTelefoneCliente c) clientes
 
 
 
 
--- Função para editar um cliente pelo ID
+{- Função para editar um cliente pelo ID
+Descrição: Permite editar um cliente existente com base no seu ID.
+-- Entrada: ID do cliente a ser editado e lista de clientes.
+-- Saída: Lista atualizada de clientes.
+-}
 editarCliente :: Int -> [Cliente] -> IO [Cliente]
 editarCliente idEditar clientes = do
+    -- Filtra o cliente pelo ID
     let clienteExistente = filter (\c -> obterIdCliente c == idEditar) clientes
 
     if null clienteExistente
@@ -46,15 +63,18 @@ editarCliente idEditar clientes = do
             putStrLn "Cliente não encontrado!"
             return clientes
         else do
+            -- Obtém o cliente e suas informações atuais
             let cliente = head clienteExistente  -- Pegamos o primeiro elemento com segurança
             let nomeAtual = obterNomeCliente cliente
             let telefoneAtual = obterTelefoneCliente cliente
 
+            -- Exibe as informações atuais
             putStrLn "\nInformações atuais do cliente:"
             putStrLn $ "ID: " ++ show idEditar
             putStrLn $ "Nome: " ++ nomeAtual
             putStrLn $ "Telefone: " ++ telefoneAtual
             
+            -- Menu de edição
             putStrLn "\nO que você deseja editar?"
             putStrLn "1. Nome"
             putStrLn "2. Telefone"
@@ -63,6 +83,7 @@ editarCliente idEditar clientes = do
             putStr "Escolha uma opção: "
             opcao <- getLine
             
+            -- Processa a escolha do usuário
             case opcao of
                 "1" -> do
                     novoNome <- getStringValid "Digite o novo nome do cliente: "
@@ -101,9 +122,14 @@ editarCliente idEditar clientes = do
                     putStrLn "Opção inválida!"
                     return clientes
 
--- Função para excluir um cliente pelo ID
+{- Função para excluir um cliente pelo ID
+Descrição: Remove um cliente da lista com base no ID informado.
+Entrada: ID do cliente a ser excluído e lista de clientes.
+Saída: Lista atualizada de clientes.
+-}
 excluirCliente :: Int -> [Cliente] -> IO [Cliente]
 excluirCliente idExcluir clientes = do
+    -- Remove o cliente com o ID informado
     let clientesAtualizados = filter (\c -> obterIdCliente c /= idExcluir) clientes
     if length clientesAtualizados == length clientes
         then do
