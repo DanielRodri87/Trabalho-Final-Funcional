@@ -29,7 +29,7 @@ getStringValid prompt = do
 
     if null str 
         then do
-            putStrLn "Entrada inválida! O campo não pode estar vazio."
+            putStrLn "Entrée invalide! Le champ ne peut pas être vide."
             getStringValid prompt
         else return str
 
@@ -51,5 +51,5 @@ getValidInt prompt = do
     if all isDigit input  -- Verifica se todos os caracteres são dígitos
         then return (read input :: Int)
         else do
-            putStrLn "Entrada inválida. Digite um número inteiro."
+            putStrLn "Entrée invalide. Veuillez saisir un nombre entier."
             getValidInt prompt
