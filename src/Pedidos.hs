@@ -25,15 +25,12 @@ Retorna o pedido criado.
 -}
 novoPedido :: [Pedido] -> IO Pedido
 novoPedido pedidos = do
-    idCliente <- getValidInt "Digite o ID do cliente:" 
- 
-    nomeProduto <- getStringValid "Digite o nome do produto:"
-  
-    qtd <- getValidInt "Digite a quantidade:"  
+    idCliente <- getValidInt "Entrez l'ID du client:" 
+    nomeProduto <- getStringValid "Entrez le nom du produit:"
+    qtd <- getValidInt "Entrez la quantité:"  
 
     let pedido = Pedido idCliente nomeProduto qtd
-
-    putStrLn "Pedido cadastrado na fila com sucesso!"
+    putStrLn "Commande ajoutée à la file avec succès!"
     return pedido
 
 {-| Lista todos os pedidos presentes na fila.
@@ -43,8 +40,8 @@ ID do cliente, nome do produto e quantidade.
 -}
 listarPedidos :: [Pedido] -> IO ()
 listarPedidos pedidos = do
-    putStrLn "Fila de Pedidos:"
-    putStrLn "ID Cliente\tProduto\tQuantidade"
+    putStrLn "File d'Attente des Commandes:"
+    putStrLn "ID Client\tProduit\tQuantité"
     putStrLn "--------------------------------------"
     mapM_ (\p -> putStrLn $ show (idClientePedido p) ++ "\t" ++ nomeProdutoPedido p++ "\t" ++ show (quantidadePedido p)) pedidos
 
@@ -60,7 +57,7 @@ Parâmetros:
 salvarPedidos :: [Pedido] -> FilePath -> IO ()
 salvarPedidos pedidos arquivo = do
     writeFile arquivo (show pedidos)
-    putStrLn $ "Pedidos salvos com sucesso em " ++ arquivo
+    putStrLn $ "Commandes sauvegardées avec succès dans " ++ arquivo
 
 
 {-| Carrega a lista de pedidos de um arquivo.

@@ -30,20 +30,20 @@ Retorna o produto criado.
 -}
 novoProduto :: [Produto] -> IO Produto
 novoProduto produtos = do
-    nome <- getStringValid "Digite o nome do produto: "
+    nome <- getStringValid "Entrez le nom du produit: "
      
-    qtd <- getValidInt "Digite a quantidade do produto: "
+    qtd <- getValidInt "Entrez la quantité du produit: "
 
-    precoStr <- getStringValid "Digite o preço do produto:"
+    precoStr <- getStringValid "Entrez le prix du produit:"
     let preco = read precoStr :: Float
 
-    controle <- getStringValid "Digite o controle/categoria do produto:"
+    controle <- getStringValid "Entrez la catégorie du produit:"
 
     -- Gera um ID único entre 100 e 999
     let id = gerarIdUnicoProduto produtos
     
     let produto = Produto id nome qtd preco controle
-    putStrLn $ "Produto cadastrado com sucesso! ID: " ++ show id
+    putStrLn $ "Produit enregistré avec succès! ID: " ++ show id
     return produto
 
 {-| Lista todos os produtos presentes.
@@ -53,12 +53,83 @@ ID, nome, quantidade, preço e controle/categoria.
 -}
 listarProdutos :: [Produto] -> IO ()
 listarProdutos produtos = do
-    putStrLn "Lista de Produtos:"
-    putStrLn "ID\tNome\t\tQuantidade\tPreço\t\tControle"
-    putStrLn "--------------------------------------------------------------"
+    putStrLn "\n    🍽️  Menu du LaRatatouille Bistro 🍽️"
+    putStrLn "    =================================="
+    putStrLn "    ID   |  Plat          |  Prix   | Stock  | Catégorie"
+    putStrLn "    ------------------------------------------------"
     mapM_ (\p -> 
-        putStrLn $ show (idProduto p) ++ "\t" ++ nomeProduto p ++ "\t\t" ++ 
-        show (quantidadeProduto p) ++ "\t\t" ++ show (precoProduto p) ++ "\t\t" ++ controleProduto p) produtos
+        putStrLn $ "    " ++ show (idProduto p) ++ 
+                   "  |  " ++ padRight 12 (nomeProduto p) ++ 
+                   "  |  €" ++ padLeft 5 (show (precoProduto p)) ++ 
+                   "  |   " ++ padLeft 3 (show (quantidadeProduto p)) ++ 
+                   "   | " ++ controleProduto p) produtos
+    putStrLn "    ------------------------------------------------"
+    where
+        padRight n str = take n (str ++ repeat ' ')
+        padLeft n str = take n (reverse (take n (reverse str ++ repeat ' ')))
+
+{-| Busca um produto pelo ID na lista.
+
+Parâmetros:
+- 'idBusca': ID do produto a ser buscado
+- 'produtos': Lista de produtos onde buscar
+
+Retorna:
+- Maybe Produto - Just produto se encontrado, Nothing caso contrário
+-}
+buscarProdutoPorId :: Int -> [Produto] -> Maybe Produto
+buscarProdutoPorId idBusca produtos = 
+    case filter (\p -> idProduto p == idBusca) produtos of
+        [] -> Nothing
+        (p:_) -> Just p
+
+{-| Verifica se um produto tem estoque suficiente.
+
+Parâmetros:
+- 'idProd': ID do produto
+- 'qtdDesejada': Quantidade desejada
+- 'produtos': Lista de produtos
+
+Retorna:
+- True se há estoque suficiente, False caso contrário
+-}
+temEstoqueSuficiente :: Int -> Int -> [Produto] -> Bool
+temEstoqueSuficiente idProd qtdDesejada produtos =
+    case buscarProdutoPorId idProd produtos of
+        Nothing -> False
+        Just produto -> quantidadeProduto produto >= qtdDesejada
+
+{-| Atualiza a quantidade de um produto específico.
+
+Parâmetros:
+- 'idProd': ID do produto a ser atualizado
+- 'novaQtd': Nova quantidade do produto
+- 'produtos': Lista de produtos
+
+Retorna:
+- Nova lista de produtos com quantidade atualizada
+-}
+atualizarQuantidadeProduto :: Int -> Int -> [Produto] -> [Produto]
+atualizarQuantidadeProduto idProd novaQtd produtos =
+    map (\p -> if idProduto p == idProd 
+               then p { quantidadeProduto = novaQtd }
+               else p) produtos
+
+{-| Decrementa a quantidade de um produto específico.
+
+Parâmetros:
+- 'idProd': ID do produto
+- 'qtdDecremento': Quantidade a ser decrementada
+- 'produtos': Lista de produtos
+
+Retorna:
+- Nova lista de produtos com quantidade decrementada
+-}
+decrementarQuantidadeProduto :: Int -> Int -> [Produto] -> [Produto]
+decrementarQuantidadeProduto idProd qtdDecremento produtos =
+    map (\p -> if idProduto p == idProd 
+               then p { quantidadeProduto = max 0 (quantidadeProduto p - qtdDecremento) }
+               else p) produtos
 
 {-| Edita um produto existente na lista, identificado pelo ID.
 
@@ -77,7 +148,7 @@ editarProduto idEditar produtos = do
     let produtoExistente = filter (\p -> obterID p == idEditar) produtos
     if null produtoExistente
         then do
-            putStrLn "Produto não encontrado!"
+            putStrLn "Produit introuvable!"
             return produtos
         else do
             let produto = head produtoExistente
@@ -86,21 +157,20 @@ editarProduto idEditar produtos = do
             let precoAtual = precoProduto produto
             let controleAtual = controleProduto produto
             
-            putStrLn $ "Produto atual: ID=" ++ show idEditar ++ 
-                      ", Nome=" ++ nomeAtual ++ 
-                      ", Quantidade=" ++ show qtdAtual ++
-                      ", Preço=" ++ show precoAtual ++
-                      ", Controle=" ++ controleAtual
+            putStrLn $ "Produit actuel: ID=" ++ show idEditar ++ 
+                      ", Nom=" ++ nomeAtual ++ 
+                      ", Quantité=" ++ show qtdAtual ++
+                      ", Prix=" ++ show precoAtual ++
+                      ", Catégorie=" ++ controleAtual
             
-             
-            novoNome <- getStringValid "Digite o novo nome do produto (ou enter para manter):"
+            novoNome <- getStringValid "Entrez le nouveau nom du produit (ou Entrée pour garder):"
             
-            novaQtd <- getValidInt "Digite a nova quantidade do produto (ou enter para manter):"
+            novaQtd <- getValidInt "Entrez la nouvelle quantité du produit (ou Entrée pour garder):"
             
-            novoPrecoStr <- getStringValid "Digite o novo preco do produto (ou enter para manter):"
+            novoPrecoStr <- getStringValid "Entrez le nouveau prix du produit (ou Entrée pour garder):"
             let novoPreco = read novoPrecoStr :: Float
             
-            novoControle <- getStringValid "Digite o novo controle do produto (ou enter para manter):"
+            novoControle <- getStringValid "Entrez la nouvelle catégorie du produit (ou Entrée pour garder):"
 
             let produtosAtualizados = map (\p ->
                     if idProduto p == idEditar
@@ -110,7 +180,7 @@ editarProduto idEditar produtos = do
                             }
                         else p) produtos
 
-            putStrLn "Produto editado com sucesso!"
+            putStrLn "Produit modifié avec succès!"
             return produtosAtualizados
 
 {-| Exclui um produto da lista, identificado pelo ID.
@@ -129,22 +199,22 @@ excluirProduto idExcluir produtos = do
     let produtoParaExcluir = filter (\p -> obterID p == idExcluir) produtos
     if null produtoParaExcluir
         then do
-            putStrLn "Produto não encontrado!"
+            putStrLn "Produit introuvable!"
             return produtos
         else do
             let produto = head produtoParaExcluir
-            putStrLn $ "Produto a ser excluído: " ++ nomeProduto produto
+            putStrLn $ "Produit à supprimer: " ++ nomeProduto produto
             
-            putStr "Confirmar exclusão (S/N)? "
+            putStr "Confirmer la suppression (O/N)? "
             confirmacao <- getLine
             
-            if confirmacao == "S" || confirmacao == "s"
+            if confirmacao == "O" || confirmacao == "o"
                 then do
                     let produtosAtualizados = filter (\p -> idProduto p /= idExcluir) produtos
-                    putStrLn "Produto excluído com sucesso!"
+                    putStrLn "Produit supprimé avec succès!"
                     return produtosAtualizados
                 else do
-                    putStrLn "Exclusão cancelada."
+                    putStrLn "Suppression annulée."
                     return produtos
 
 {-| Salva a lista de produtos em um arquivo.
@@ -158,7 +228,7 @@ Parâmetros:
 salvarProdutos :: [Produto] -> FilePath -> IO ()
 salvarProdutos produtos arquivo = do
     writeFile arquivo (show produtos)
-    putStrLn $ "Produtos salvos com sucesso em " ++ arquivo
+    putStrLn $ "Produits enregistrés avec succès dans " ++ arquivo
 
 {-| Carrega a lista de produtos de um arquivo.
 
@@ -176,4 +246,3 @@ carregarProdutos arquivo = do
     conteudo <- readFile arquivo `catch` (\(_ :: IOException) -> return "[]")
     let produtos = read conteudo :: [Produto]
     return produtos
-

@@ -17,19 +17,13 @@ Saída: Um novo cliente criado.
 -}
 cadastrarCliente :: [Cliente] -> IO Cliente
 cadastrarCliente clientes = do
-    -- Gera um ID único para o novo cliente
     let idCliente = gerarIdUnicoCliente clientes
-    putStrLn $ "ID gerado: " ++ show idCliente
-
-    -- Solicita nome e telefone válidos ao usuário
-    nome <- getStringValid "Digite o nome do cliente: "
-
-    telefone <- getStringValid "Digite o telefone do cliente: "
-
-    -- Cria o novo Cliente
+    putStrLn $ "ID généré: " ++ show idCliente
+    nome <- getStringValid "Entrez le nom du client: "
+    telefone <- getStringValid "Entrez le téléphone du client: "
+    -- Create new client with separate arguments
     let cliente = novoCliente idCliente nome telefone
-
-    putStrLn "Cliente cadastrado com sucesso!"
+    putStrLn "Client enregistré avec succès!"
     return cliente
 
 {- Função para listar todos os clientes
@@ -39,8 +33,8 @@ Saída: Impressão formatada no console.
 -}
 listarClientes :: [Cliente] -> IO ()
 listarClientes clientes = do
-    putStrLn "Lista de Clientes:"
-    putStrLn "ID\tNome\t\tTelefone"
+    putStrLn "Liste des Clients:"
+    putStrLn "ID\tNom\t\tTéléphone"
     putStrLn "-----------------------------------"
     -- Imprime cada cliente formatado
     mapM_ (\c -> putStrLn $ show (obterIdCliente c) ++ "\t" ++ obterNomeCliente c ++ "\t\t" ++ obterTelefoneCliente c) clientes
@@ -60,7 +54,7 @@ editarCliente idEditar clientes = do
 
     if null clienteExistente
         then do
-            putStrLn "Cliente não encontrado!"
+            putStrLn "Client introuvable!"
             return clientes
         else do
             -- Obtém o cliente e suas informações atuais
@@ -69,57 +63,56 @@ editarCliente idEditar clientes = do
             let telefoneAtual = obterTelefoneCliente cliente
 
             -- Exibe as informações atuais
-            putStrLn "\nInformações atuais do cliente:"
+            putStrLn "\nInformations actuelles du client:"
             putStrLn $ "ID: " ++ show idEditar
-            putStrLn $ "Nome: " ++ nomeAtual
-            putStrLn $ "Telefone: " ++ telefoneAtual
+            putStrLn $ "Nom: " ++ nomeAtual
+            putStrLn $ "Téléphone: " ++ telefoneAtual
             
             -- Menu de edição
-            putStrLn "\nO que você deseja editar?"
-            putStrLn "1. Nome"
-            putStrLn "2. Telefone"
-            putStrLn "3. Ambos"
-            putStrLn "4. Cancelar"
-            putStr "Escolha uma opção: "
+            putStrLn "\nQue souhaitez-vous modifier?"
+            putStrLn "1. Nom"
+            putStrLn "2. Téléphone"
+            putStrLn "3. Les deux"
+            putStrLn "4. Annuler"
+            putStr "Choisissez une option: "
             opcao <- getLine
             
             -- Processa a escolha do usuário
             case opcao of
                 "1" -> do
-                    novoNome <- getStringValid "Digite o novo nome do cliente: "
+                    novoNome <- getStringValid "Entrez le nouveau nom du client: "
                     let clientesAtualizados = map (\c ->
                             if obterIdCliente c == idEditar
                                 then atualizarCliente c novoNome (obterTelefoneCliente c)
                                 else c) clientes
-                    putStrLn "Nome editado com sucesso!"
+                    putStrLn "Nom modifié avec succès!"
                     return clientesAtualizados
                     
                 "2" -> do  
-                    novoTelefone <- getStringValid "Digite o novo telefone do cliente: "
+                    novoTelefone <- getStringValid "Entrez le nouveau numéro de téléphone du client: "
                     let clientesAtualizados = map (\c ->
                             if obterIdCliente c == idEditar
                                 then atualizarCliente c (obterNomeCliente c) novoTelefone
                                 else c) clientes
-                    putStrLn "Telefone editado com sucesso!"
+                    putStrLn "Téléphone modifié avec succès!"
                     return clientesAtualizados
                     
                 "3" -> do
-                    novoNome <- getStringValid "Digite o nome do cliente: "
-
-                    novoTelefone <- getStringValid "Digite o telefone do cliente: "
+                    novoNome <- getStringValid "Entrez le nom du client: "
+                    novoTelefone <- getStringValid "Entrez le téléphone du client: "
                     let clientesAtualizados = map (\c ->
                             if obterIdCliente c == idEditar
                                 then atualizarCliente c novoNome novoTelefone
                                 else c) clientes
-                    putStrLn "Cliente editado com sucesso!"
+                    putStrLn "Client modifié avec succès!"
                     return clientesAtualizados
                     
                 "4" -> do
-                    putStrLn "Operação cancelada."
+                    putStrLn "Opération annulée."
                     return clientes
                     
                 _ -> do
-                    putStrLn "Opção inválida!"
+                    putStrLn "Option invalide!"
                     return clientes
 
 {- Função para excluir um cliente pelo ID
@@ -133,8 +126,8 @@ excluirCliente idExcluir clientes = do
     let clientesAtualizados = filter (\c -> obterIdCliente c /= idExcluir) clientes
     if length clientesAtualizados == length clientes
         then do
-            putStrLn "Cliente não encontrado!"
+            putStrLn "Client introuvable!"
             return clientes
         else do
-            putStrLn "Cliente excluído com sucesso!"
+            putStrLn "Client supprimé avec succès!"
             return clientesAtualizados
