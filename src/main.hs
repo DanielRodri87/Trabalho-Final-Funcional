@@ -98,7 +98,7 @@ menuPrincipal clientes produtos pedidos = do
     putStrLn "\n    🍷 Menu Principal du Restaurant 🍷"
     putStrLn "    1. 👤 Gestion des clients"
     putStrLn "    2. 🍽️  Menu et Cuisine"
-    putStrLn "    3. 📝 Commandes (Pedidos)"
+    putStrLn "    3. 📝 Commandes"
     putStrLn "    4. 🚪 Au Revoir"
     putStr "\n    🤵 Votre choix, s'il vous plaît: "
     opcao <- getLine

@@ -156,27 +156,45 @@ editarProduto idEditar produtos = do
             let qtdAtual = quantidadeProduto produto
             let precoAtual = precoProduto produto
             let controleAtual = controleProduto produto
-            
-            putStrLn $ "Produit actuel: ID=" ++ show idEditar ++ 
-                      ", Nom=" ++ nomeAtual ++ 
-                      ", Quantité=" ++ show qtdAtual ++
-                      ", Prix=" ++ show precoAtual ++
-                      ", Catégorie=" ++ controleAtual
-            
-            novoNome <- getStringValid "Entrez le nouveau nom du produit (ou Entrée pour garder):"
-            
-            novaQtd <- getValidInt "Entrez la nouvelle quantité du produit (ou Entrée pour garder):"
-            
-            novoPrecoStr <- getStringValid "Entrez le nouveau prix du produit (ou Entrée pour garder):"
-            let novoPreco = read novoPrecoStr :: Float
-            
-            novoControle <- getStringValid "Entrez la nouvelle catégorie du produit (ou Entrée pour garder):"
+
+            putStrLn "\n═════════════════════════════════════════════════"
+            putStrLn "         🟢 Produit trouvé!"
+            putStrLn "═════════════════════════════════════════════════"
+            putStrLn $ "ID:         " ++ show idEditar
+            putStrLn $ "Nom:        " ++ nomeAtual
+            putStrLn $ "Quantité:   " ++ show qtdAtual
+            putStrLn $ "Prix:       € " ++ show precoAtual
+            putStrLn $ "Catégorie:  " ++ controleAtual
+            putStrLn "═════════════════════════════════════════════════\n"
+
+            -- Solicita novos dados, permitindo manter os atuais
+            putStrLn "Appuyez sur Entrée pour garder la valeur actuelle."
+            putStr $ "Nouveau nom du produit [" ++ nomeAtual 
+            ++ "]: "
+            hFlush stdout
+            novoNome <- getLine
+            let nomeFinal = if null novoNome then nomeAtual else novoNome
+
+            putStr $ "Nouvelle quantité du produit [" ++ show qtdAtual ++ "]: "
+            hFlush stdout
+            qtdStr <- getLine
+            let qtdFinal = if null qtdStr then qtdAtual else (read qtdStr :: Int)
+
+            putStr $ "Nouveau prix du produit [" ++ show precoAtual ++ "]: "
+            hFlush stdout
+            precoStr <- getLine
+            let precoFinal = if null precoStr then precoAtual else (read precoStr :: Float)
+
+            putStr $ "Nouvelle catégorie du produit [" ++ controleAtual ++ "]: "
+            hFlush stdout
+            novoControle <- getLine
+            let controleFinal = if null novoControle then controleAtual else novoControle
 
             let produtosAtualizados = map (\p ->
                     if idProduto p == idEditar
                         then p {
-                            nomeProduto = novoNome, quantidadeProduto = novaQtd, 
-                            precoProduto = novoPreco, controleProduto = novoControle
+                            nomeProduto = nomeFinal, quantidadeProduto = qtdFinal,
+                            precoProduto = precoFinal, controleProduto = controleFinal
                             }
                         else p) produtos
 
